@@ -5,14 +5,21 @@ using UnityEngine;
 public class AStarManager : MonoBehaviour {
   public class AStarSolver<TPathNode, TUserContext> : SettlersEngine.SpatialAStar<TPathNode, TUserContext> where TPathNode : SettlersEngine.IPathNode<TUserContext>
   {
-    protected override Double Heuristic(PathNode inStart, PathNode inEnd)
-    {
-        return Math.Abs(inStart.X - inEnd.X) + Math.Abs(inStart.Y - inEnd.Y);
+    protected override Double Heuristic(PathNode inStart, PathNode inEnd) {
+      return Math.Abs(inStart.X - inEnd.X) + Math.Abs(inStart.Y - inEnd.Y);
     }
 
-    protected override Double NeighborDistance(PathNode inStart, PathNode inEnd)
-    {
-        return Heuristic(inStart, inEnd);
+    protected override Double NeighborDistance(PathNode inStart, PathNode inEnd) {
+      int diffX = Math.Abs(inStart.X - inEnd.X);
+      int diffY = Math.Abs(inStart.Y - inEnd.Y);
+
+      switch (diffX + diffY) {
+        case 1: return 1;
+        case 2: return int.MaxValue;
+        case 0: return 0;
+        default:
+          throw new ApplicationException();
+      }
     }
 
     public AStarSolver(TPathNode[,] inGrid)
