@@ -48,7 +48,7 @@ public class AStarManager : MonoBehaviour {
     currentSolver = new AStarSolver<AStarPathNode, object>(grid);
   }
 
-  public IEnumerable<AStarPathNode> Search(SettlersEngine.Point startPoint, SettlersEngine.Point endPoint) {
+  public LinkedList<AStarPathNode> Search(SettlersEngine.Point startPoint, SettlersEngine.Point endPoint) {
     if (currentSolver == null) {
       return null;
     } else {
