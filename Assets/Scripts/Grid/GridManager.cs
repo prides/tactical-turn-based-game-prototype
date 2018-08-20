@@ -18,10 +18,8 @@ public class GridManager : MonoBehaviour {
       instance = this;
     } else {
       Destroy(this);
+      return;
     }
-  }
-
-  private void Start() {
     tilemap = GetComponentInChildren<Tilemap>();
     if (tilemap == null) {
       Debug.LogError("tilemap is null");

@@ -20,6 +20,7 @@ public class SimpleClicker : MonoBehaviour {
       currentCamera = FindObjectOfType<Camera>();
     }
     currentBattleId = BattleManager.GetInstance().StartBattle(participants);
+    GridManager.GetInstance().ShowBattleGrid(currentBattleId);
   }
 
   void Update() {
