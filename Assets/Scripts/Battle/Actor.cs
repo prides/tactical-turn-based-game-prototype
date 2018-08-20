@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Actor : GridMonoBehaviour {
+  [System.Serializable]
+  public class Statistics {
+    [SerializeField]
+    private int movePoints;
+    public int Move {
+      get { return movePoints; }
+      set { movePoints = value;}
+    }
+
+    [SerializeField]
+    private int initiative;
+    public int Initiative {
+      get { return initiative; }
+      set { initiative = value;}
+    }
+  }
 
   private Coroutine currentMoveEnumerator;
 
   public GridAgent currentTile;
-  public int currentMovePoints = 8;
+    public int currentMovePoints = 8;
+
+    public int initiativePoints;
+
+  [SerializeField]
+  private Statistics stat;
+  public Statistics Stat {
+    get { return stat; }
+  }
 
   public void MoveTo(Vector3 position) {
     SettlersEngine.Point startPoint = new SettlersEngine.Point() {

@@ -6,8 +6,7 @@ public class BattleManager : MonoBehaviour {
 
   private static BattleManager instance;
 
-  [SerializeField]
-  private Actor currentActor;
+  private Dictionary<int, Battle> currentBattles = new Dictionary<int, Battle>();;
 
   private void Awake() {
     if (instance == null) {
@@ -21,7 +20,24 @@ public class BattleManager : MonoBehaviour {
     return instance;
   }
 
-  public Actor GetCurrentActor() {
-    return currentActor;
+  public int CreateBattle(List<Actor> participants) {
+    int battleId = Randomizer.Range(0, int.MaxValue);
+    Battle battle = new Battle(battleId, participants);
+    currentBattles.Add(battleId, battle);
+    return battleId;
+  }
+
+  public Battle GetBattle(int battleId) {
+    Battle result;
+    if (!currentBattles.TryGetValue(battleId, out result)) {
+      Debug.LogWarning("Failed to get battle with id:" + battleId);
+      return null;
+    }
+    return result;
+  }
+
+  public Actor GetCurrentActor(int battleId) {
+    Battle battle = currentBattles[battleId];
+    return battle.GetCurrentActor();
   }
 }

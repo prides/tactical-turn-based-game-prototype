@@ -32,10 +32,10 @@ public class GridManager : MonoBehaviour {
     return instance;
   }
 
-  public void ShowBattleGrid() {
+  public void ShowBattleGrid(int battleId) {
     ClearBattleGrid();
 
-    Actor currentActor = BattleManager.GetInstance().GetCurrentActor();
+    Actor currentActor = BattleManager.GetInstance().GetCurrentActor(battleId);
     if (currentActor == null) {
       Debug.LogError("There is no current actor in battle manager");
       return;
@@ -69,6 +69,8 @@ public class GridManager : MonoBehaviour {
     int maxY = startPos.y + drawRange;
     maxY = gridMax.y < maxY ? gridMax.y : maxY;
 
+    int index = 0;
+
     for (int x = minX; x <= maxX; x++) {
       currentBattleGrid.Add(new List<Vector2Int>());
       for (int y = minY; y <= maxY; y++) {
@@ -81,8 +83,9 @@ public class GridManager : MonoBehaviour {
           tileType = ((float)path.Count / (float)drawRange) < 0.7f ? 2 : 1;
         }
         tilemap.SetTile(new Vector3Int(x, y, 0), tileBases[tileType]);
-        currentBattleGrid[x].Add(new Vector2Int(x, y));
+        currentBattleGrid[index].Add(new Vector2Int(x, y));
       }
+      index++;
     }
   }
 
