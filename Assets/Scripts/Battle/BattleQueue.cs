@@ -3,16 +3,18 @@ using System.Linq;
 using System.Collections.Generic;
 
 public class BattleQueue {
-  private static const int QUEUE_LENGTH = 3;
+  private const int QUEUE_LENGTH = 3;
 
   public class Cycle {
-    private Queue<Actor> queue = new Queue<Actor>();
+    public Queue<Actor> queue = new Queue<Actor>();
+
+    public int Count { get { return queue.Count; } }
 
     public Cycle(List<Actor> participants) {
       GenerateQueue(participants);
     }
 
-    public Regenerate(List<Actor> participants) {
+    public void Regenerate(List<Actor> participants) {
       queue.Clear();
       GenerateQueue(participants);
     }
@@ -26,6 +28,10 @@ public class BattleQueue {
 
     public Actor Peek() {
       return queue.Peek();
+    }
+
+    public Actor Dequeue() {
+      return queue.Dequeue();
     }
   }
 
@@ -45,12 +51,21 @@ public class BattleQueue {
     return queue.Peek().Peek();
   }
 
-  public void Dequeue() {
+  public Actor Dequeue() {
     Cycle currentCycle = queue.Peek();
     Actor currentActor = currentCycle.Dequeue();
     if (currentCycle.Count == 0) {
       queue.Dequeue();
-      queue.Enqueue(participants);
+      queue.Enqueue(new Cycle(participants));
+    }
+    return currentActor;
+  }
+
+  public IEnumerable<Actor> GetEnumerable() {
+    foreach (Cycle c in queue) {
+      foreach (Actor a in c.queue) {
+        yield return a;
+      }
     }
   }
 }

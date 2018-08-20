@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,9 +24,6 @@ public class Actor : GridMonoBehaviour {
   private Coroutine currentMoveEnumerator;
 
   public GridAgent currentTile;
-    public int currentMovePoints = 8;
-
-    public int initiativePoints;
 
   [SerializeField]
   private Statistics stat;
@@ -33,7 +31,7 @@ public class Actor : GridMonoBehaviour {
     get { return stat; }
   }
 
-  public void MoveTo(Vector3 position) {
+  public void MoveTo(Vector3 position, Action<bool> movingOverCallback) {
     SettlersEngine.Point startPoint = new SettlersEngine.Point() {
       X = (int)this.transform.position.x,
       Y = (int)this.transform.position.z
@@ -47,16 +45,18 @@ public class Actor : GridMonoBehaviour {
       if (currentMoveEnumerator != null) {
         StopCoroutine(currentMoveEnumerator);
       }
-      currentMoveEnumerator = StartCoroutine(StartMoveTo(path));
+      currentMoveEnumerator = StartCoroutine(StartMoveTo(path, movingOverCallback));
+    } else {
+      movingOverCallback(false);
     }
   }
 
-  IEnumerator StartMoveTo(IEnumerable<AStarPathNode> path) {
+  IEnumerator StartMoveTo(IEnumerable<AStarPathNode> path, Action<bool> movingOverCallback) {
     foreach (AStarPathNode node in path) {
       Debug.Log("node.x:" + node.X + " node.y:" + node.Y);
       yield return StartCoroutine(MoveToNode(node));
     }
-    GridManager.GetInstance().ShowBattleGrid();
+    movingOverCallback(true);
   }
 
   IEnumerator MoveToNode(AStarPathNode node) {

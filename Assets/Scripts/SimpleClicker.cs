@@ -11,14 +11,15 @@ public class SimpleClicker : MonoBehaviour {
 
   private int currentBattleId;
 
+  [SerializeField]
+  [Header("Debug only")]
+  private List<Actor> participants = new List<Actor>();
+
   void Start() {
     if (currentCamera == null) {
       currentCamera = FindObjectOfType<Camera>();
     }
-    Actor actor = GetComponent<Actor>();
-    List<Actor> participants = new List<Actor>();
-    participants.Add(actor);
-    currentBattleId = BattleManager.GetInstance().CreateBattle(participants);
+    currentBattleId = BattleManager.GetInstance().StartBattle(participants);
   }
 
   void Update() {
@@ -33,13 +34,18 @@ public class SimpleClicker : MonoBehaviour {
           lastPos = point;
           PathDrawer.GetInstance().HidePath();
           LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(Converter.Convert<SettlersEngine.Point>(currentActor.GridTransform.Position), Converter.Convert<SettlersEngine.Point>(point));
-          if (path != null && path.Count < currentActor.currentMovePoints) {
+          if (path != null && path.Count < currentActor.Stat.Move) {
             Vector2Int[] pathVec = Converter.ConvertPath(path);
             PathDrawer.GetInstance().ShowPath(pathVec);
           }
         }
         if (Input.GetMouseButtonDown(0)) {
-          currentActor.MoveTo(rayHit.point);
+          currentActor.MoveTo(rayHit.point, delegate (bool result) {
+            isHitGround = false;
+            lastPos = Vector2Int.zero;
+            BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
+            GridManager.GetInstance().ShowBattleGrid(currentBattleId);
+          });
         }
       } else {
         if (isHitGround) {

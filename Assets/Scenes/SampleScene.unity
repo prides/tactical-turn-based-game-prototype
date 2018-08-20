@@ -604,6 +604,7 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
+  - component: {fileID: 534669906}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -671,6 +672,110 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 64.61, y: 0, z: 0}
+--- !u!114 &534669906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 325569fd59ba3a4478747b6c5f2c0ced, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentCamera: {fileID: 534669904}
+  participants:
+  - {fileID: 884128003}
+  - {fileID: 546594077}
+--- !u!1001 &546594075
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 10.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.0625
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.0625
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.0625
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_Name
+      value: spiderman (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+  m_IsPrefabAsset: 0
+--- !u!1 &546594076 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b,
+    type: 3}
+  m_PrefabInternal: {fileID: 546594075}
+--- !u!114 &546594077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 546594076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cf960fbe8c509c42a651675b170ab87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTile: {fileID: 1950268050}
+  stat:
+    movePoints: 5
+    initiative: 2
+--- !u!114 &546594078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 546594076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5707b34421a2d846a53f07061af04b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &839547925
 GameObject:
   m_ObjectHideFlags: 0
@@ -751,18 +856,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b,
     type: 3}
   m_PrefabInternal: {fileID: 2144675011}
---- !u!114 &884128000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 884127999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 325569fd59ba3a4478747b6c5f2c0ced, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentCamera: {fileID: 534669904}
 --- !u!114 &884128002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -786,7 +879,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentTile: {fileID: 1950268050}
-  currentMovePoints: 8
+  stat:
+    movePoints: 8
+    initiative: 3
 --- !u!1 &922975643
 GameObject:
   m_ObjectHideFlags: 0
@@ -3826,7 +3921,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7230043a7b88348af46aa17af7c9f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentActor: {fileID: 884128003}
 --- !u!4 &1584583248
 Transform:
   m_ObjectHideFlags: 0

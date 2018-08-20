@@ -6,7 +6,7 @@ public class BattleManager : MonoBehaviour {
 
   private static BattleManager instance;
 
-  private Dictionary<int, Battle> currentBattles = new Dictionary<int, Battle>();;
+  private Dictionary<int, Battle> currentBattles = new Dictionary<int, Battle>();
 
   private void Awake() {
     if (instance == null) {
@@ -20,8 +20,8 @@ public class BattleManager : MonoBehaviour {
     return instance;
   }
 
-  public int CreateBattle(List<Actor> participants) {
-    int battleId = Randomizer.Range(0, int.MaxValue);
+  public int StartBattle(List<Actor> participants) {
+    int battleId = Utils.Randomizer.Range(0, int.MaxValue);
     Battle battle = new Battle(battleId, participants);
     currentBattles.Add(battleId, battle);
     return battleId;
