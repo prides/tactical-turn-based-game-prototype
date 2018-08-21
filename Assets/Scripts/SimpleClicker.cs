@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +21,16 @@ public class SimpleClicker : MonoBehaviour {
     }
     currentBattleId = BattleManager.GetInstance().StartBattle(participants);
     GridManager.GetInstance().ShowBattleGrid(currentBattleId);
+
+    foreach (Actor actor in participants) {
+      actor.OnDiedEvent += OnActorDied;
+    }
+  }
+
+  private void OnActorDied(object sender, EventArgs e) {
+    Actor actor = (Actor)sender;
+    actor.OnDiedEvent -= OnActorDied;
+    Destroy(actor.gameObject);
   }
 
   void Update() {
@@ -35,7 +45,7 @@ public class SimpleClicker : MonoBehaviour {
           lastPos = point;
           PathDrawer.GetInstance().HidePath();
           LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(Converter.Convert<SettlersEngine.Point>(currentActor.GridTransform.Position), Converter.Convert<SettlersEngine.Point>(point));
-          if (path != null && path.Count < currentActor.Stat.Move) {
+          if (path != null && path.Count < currentActor.Stat.MovePoints.Value) {
             Vector2Int[] pathVec = Converter.ConvertPath(path);
             PathDrawer.GetInstance().ShowPath(pathVec);
           }
@@ -44,9 +54,48 @@ public class SimpleClicker : MonoBehaviour {
           currentActor.MoveTo(rayHit.point, delegate (bool result) {
             isHitGround = false;
             lastPos = Vector2Int.zero;
-            BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
+            if (currentActor.Stat.MovePoints.Value <= 0) {
+              BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
+            }
             GridManager.GetInstance().ShowBattleGrid(currentBattleId);
           });
+        }
+      } else if (rayHit.collider.tag == "Actor") {
+        if (Input.GetMouseButtonDown(0)) {
+          Actor currentActor = BattleManager.GetInstance().GetCurrentActor(currentBattleId);
+          if (currentActor.Stat.MovePoints.Value > 0) {
+            Actor selectedActor = rayHit.collider.GetComponentInParent<Actor>();
+            if (selectedActor != null && currentActor != selectedActor) {
+              LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(Converter.Convert<SettlersEngine.Point>(currentActor.GridTransform.Position), Converter.Convert<SettlersEngine.Point>(selectedActor.GridTransform.Position));
+              if (path != null && path.Count != 0) {
+                if (path.Count == 1) {
+                  if (currentActor.Stat.MovePoints.Value >= 2) {
+                    selectedActor.ReceiveDamage(25, AttackType.Physical);
+                    currentActor.Stat.MovePoints.Value-= 2;
+                    if (currentActor.Stat.MovePoints.Value<= 0) {
+                      BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
+                    }
+                    GridManager.GetInstance().ShowBattleGrid(currentBattleId);
+                  }
+                } else {
+                  if (path.Count - 1 < currentActor.Stat.MovePoints.Value) {
+                    path.RemoveLast();
+                    AStarPathNode node = path.Last.Value;
+                    currentActor.MoveTo(new Vector3(node.X, 0, node.Y), delegate(bool result) {
+                      if (currentActor.Stat.MovePoints.Value>= 2) {
+                        selectedActor.ReceiveDamage(25, AttackType.Physical);
+                        currentActor.Stat.MovePoints.Value-= 2;
+                        if (currentActor.Stat.MovePoints.Value<= 0) {
+                          BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
+                        }
+                        GridManager.GetInstance().ShowBattleGrid(currentBattleId);
+                      }
+                    });
+                  }
+                }
+              }
+            }
+          }
         }
       } else {
         if (isHitGround) {

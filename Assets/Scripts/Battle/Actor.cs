@@ -3,23 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Actor : GridMonoBehaviour {
-  [System.Serializable]
-  public class Statistics {
-    [SerializeField]
-    private int movePoints;
-    public int Move {
-      get { return movePoints; }
-      set { movePoints = value;}
-    }
+public enum AttackType
+{
+  Physical
+}
 
-    [SerializeField]
-    private int initiative;
-    public int Initiative {
-      get { return initiative; }
-      set { initiative = value;}
-    }
-  }
+public interface IDamagable
+{
+  void ReceiveDamage(int damage, AttackType type);
+}
+
+public class Actor : GridMonoBehaviour, IDamagable {
+
+  public event EventHandler OnDiedEvent;
 
   private Coroutine currentMoveEnumerator;
 
@@ -29,6 +25,30 @@ public class Actor : GridMonoBehaviour {
   private Statistics stat;
   public Statistics Stat {
     get { return stat; }
+  }
+
+  private void Awake() {
+    Stat.Health = new StatValueWithEvent<int>() {
+      Total = 100,
+      Value = 100
+    };
+    Stat.MovePoints = new StatValueWithEvent<int>() {
+      Total = 8,
+      Value = 8
+    };
+  }
+
+  public void ReceiveDamage(int damage, AttackType type) {
+    Stat.Health.Value -= damage;
+    if (Stat.Health.Value <= 0) {
+      if (OnDiedEvent != null) {
+        OnDiedEvent(this, EventArgs.Empty);
+      }
+    }
+  }
+
+  public void StartTurn() {
+    Stat.MovePoints.Value = Stat.MovePoints.Total;
   }
 
   public void MoveTo(Vector3 position, Action<bool> movingOverCallback) {
@@ -55,6 +75,10 @@ public class Actor : GridMonoBehaviour {
     foreach (AStarPathNode node in path) {
       Debug.Log("node.x:" + node.X + " node.y:" + node.Y);
       yield return StartCoroutine(MoveToNode(node));
+      Stat.MovePoints.Value--;
+      if (Stat.MovePoints.Value == 0) {
+        break;
+      }
     }
     movingOverCallback(true);
   }

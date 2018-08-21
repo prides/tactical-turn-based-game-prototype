@@ -23,12 +23,11 @@ public class Battle {
   public void NextTurn() {
     battleQueue.Dequeue();
 
-    EventHandler handler = NextTurnStarted;
-    if (handler != null) {
+    if (NextTurnStarted != null) {
       NextTurnStartedEventArgs args = new NextTurnStartedEventArgs() {
         actor = GetCurrentActor()
       };
-      handler(this, args);
+      NextTurnStarted(this, args);
     }
   }
 }

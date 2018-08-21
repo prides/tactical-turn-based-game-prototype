@@ -40,7 +40,7 @@ public class GridManager : MonoBehaviour {
     }
     Vector2Int startPos = currentActor.GridTransform.Position;
 
-    int drawRange = currentActor.Stat.Move;
+    int drawRange = currentActor.Stat.MovePoints.Value;
 
     GridAgent tile = currentActor.currentTile;
     if (tile == null) {
