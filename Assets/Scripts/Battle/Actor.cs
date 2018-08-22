@@ -27,15 +27,10 @@ public class Actor : GridMonoBehaviour, IDamagable {
     get { return stat; }
   }
 
+  [SerializeField]
+  private List<ITurnListener> turnListeners = new List<ITurnListener>();
+
   private void Awake() {
-    Stat.Health = new StatValueWithEvent<int>() {
-      Total = 100,
-      Value = 100
-    };
-    Stat.MovePoints = new StatValueWithEvent<int>() {
-      Total = 8,
-      Value = 8
-    };
   }
 
   public void ReceiveDamage(int damage, AttackType type) {
@@ -48,7 +43,11 @@ public class Actor : GridMonoBehaviour, IDamagable {
   }
 
   public void StartTurn() {
-    Stat.MovePoints.Value = Stat.MovePoints.Total;
+    Stat.MovePoints.ApplyTotal();
+
+    foreach (ITurnListener listener in turnListeners) {
+      listener.OnNextTurn();
+    }
   }
 
   public void MoveTo(Vector3 position, Action<bool> movingOverCallback) {

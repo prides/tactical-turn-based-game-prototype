@@ -6,6 +6,7 @@ public class BattleManager : MonoBehaviour {
 
   private static BattleManager instance;
 
+  [SerializeField]
   private Dictionary<int, Battle> currentBattles = new Dictionary<int, Battle>();
 
   private void Awake() {

@@ -742,6 +742,10 @@ Prefab:
       propertyPath: m_Name
       value: spiderman (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_TagString
+      value: Actor
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
   m_IsPrefabAsset: 0
@@ -763,8 +767,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentTile: {fileID: 1950268050}
   stat:
-    movePoints: 5
-    initiative: 2
+    health:
+      baseValue: 100
+      additionalValue: 0
+      value: 100
+    magicShield:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    physicalShield:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    fireResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    waterResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    poisonResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    windResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    movePoints:
+      baseValue: 8
+      additionalValue: 0
+      value: 8
+    initiative:
+      baseValue: 3
+      additionalValue: 0
+      value: 3
 --- !u!114 &546594078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -880,8 +918,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentTile: {fileID: 1950268050}
   stat:
-    movePoints: 8
-    initiative: 3
+    health:
+      baseValue: 100
+      additionalValue: 0
+      value: 100
+    magicShield:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    physicalShield:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    fireResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    waterResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    poisonResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    windResist:
+      baseValue: 0
+      additionalValue: 0
+      value: 0
+    movePoints:
+      baseValue: 8
+      additionalValue: 0
+      value: 8
+    initiative:
+      baseValue: 4
+      additionalValue: 0
+      value: 4
 --- !u!1 &922975643
 GameObject:
   m_ObjectHideFlags: 0
@@ -4476,6 +4548,10 @@ Prefab:
     - target: {fileID: 400002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.0625
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}
+      propertyPath: m_TagString
+      value: Actor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80fea01f25ddfbf48a2e1652b63fbf1b, type: 3}

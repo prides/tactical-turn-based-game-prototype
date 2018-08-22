@@ -15,7 +15,7 @@ public class SimpleClicker : MonoBehaviour {
   [Header("Debug only")]
   private List<Actor> participants = new List<Actor>();
 
-  void Start() {
+  private void Start() {
     if (currentCamera == null) {
       currentCamera = FindObjectOfType<Camera>();
     }
