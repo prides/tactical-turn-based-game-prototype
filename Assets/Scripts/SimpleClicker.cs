@@ -20,11 +20,16 @@ public class SimpleClicker : MonoBehaviour {
       currentCamera = FindObjectOfType<Camera>();
     }
     currentBattleId = BattleManager.GetInstance().StartBattle(participants);
+    BattleManager.GetInstance().GetBattle(currentBattleId).NextTurnStarted += OnNextMove;
     GridManager.GetInstance().ShowBattleGrid(currentBattleId);
 
     foreach (Actor actor in participants) {
       actor.OnDiedEvent += OnActorDied;
     }
+  }
+
+  private void OnNextMove(object sender, EventArgs e) {
+    BattleManager.GetInstance().GetCurrentActor(currentBattleId).StartTurn();
   }
 
   private void OnActorDied(object sender, EventArgs e) {
@@ -44,8 +49,8 @@ public class SimpleClicker : MonoBehaviour {
         if (point != lastPos) {
           lastPos = point;
           PathDrawer.GetInstance().HidePath();
-          LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(Converter.Convert<SettlersEngine.Point>(currentActor.GridTransform.Position), Converter.Convert<SettlersEngine.Point>(point));
-          if (path != null && path.Count < currentActor.Stat.MovePoints.Value) {
+          LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(currentActor.GridTransform.Position, point);
+          if (path != null && path.Count - 1 <= currentActor.Stat.MovePoints.Value) {
             Vector2Int[] pathVec = Converter.ConvertPath(path);
             PathDrawer.GetInstance().ShowPath(pathVec);
           }
@@ -66,7 +71,7 @@ public class SimpleClicker : MonoBehaviour {
           if (currentActor.Stat.MovePoints.Value > 0) {
             Actor selectedActor = rayHit.collider.GetComponentInParent<Actor>();
             if (selectedActor != null && currentActor != selectedActor) {
-              LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(Converter.Convert<SettlersEngine.Point>(currentActor.GridTransform.Position), Converter.Convert<SettlersEngine.Point>(selectedActor.GridTransform.Position));
+              LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(currentActor.GridTransform.Position, selectedActor.GridTransform.Position);
               if (path != null && path.Count != 0) {
                 if (path.Count == 1) {
                   if (currentActor.Stat.MovePoints.Value >= 2) {

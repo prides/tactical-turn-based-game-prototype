@@ -13,11 +13,12 @@ public abstract class StatValue<T> {
     public ValueType type;
     public T previousValue;
   }
+  public delegate void StatValueEventDelegate(object sender, StatValue<T>.StatValueEventArgs eventArgs);
 
-  public event EventHandler Changed;
+  public event StatValueEventDelegate Changed;
 
   [SerializeField]
-  private T baseValue;
+  protected T baseValue;
   public T BaseValue {
     get { return baseValue; }
     set {
@@ -33,7 +34,7 @@ public abstract class StatValue<T> {
   }
 
   [SerializeField]
-  private T additionalValue;
+  protected T additionalValue;
   public T AdditionalValue {
     get { return additionalValue; }
     set {
@@ -49,7 +50,7 @@ public abstract class StatValue<T> {
   }
 
   [SerializeField]
-  private T value;
+  protected T value;
   public T Value {
     get { return value; }
     set {
@@ -58,11 +59,14 @@ public abstract class StatValue<T> {
         previousValue = this.value
       };
       this.value = value;
+      CheckValue();
       if (Changed != null) {
         Changed(this, eventArgs);
       }
     }
   }
+
+  protected abstract void CheckValue();
 
   public abstract void ApplyTotal();
 
@@ -91,6 +95,10 @@ public class IntStatValue : StatValue<int>, IComparable<IntStatValue> {
   public override void SubtractValue(int value) {
     AdditionalValue -= value;
     Value -= value;
+  }
+
+  protected override void CheckValue() {
+    this.value = Mathf.Clamp(Value, 0, BaseValue + AdditionalValue);
   }
 
   public int CompareTo(IntStatValue obj) {

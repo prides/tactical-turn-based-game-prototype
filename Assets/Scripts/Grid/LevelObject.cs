@@ -3,7 +3,8 @@
 public class LevelObject : GridMonoBehaviour {
 
   public enum ObjectType {
-    Obstacle
+    Obstacle,
+    Actor
   }
 
   [SerializeField]
@@ -15,11 +16,11 @@ public class LevelObject : GridMonoBehaviour {
     get { return type; }
   }
 
-  public Vector2Int[] GetPosition() {
-    Vector2Int[] result = occupiedTilesPosition;
+  public Vector2Int[] GetLocalOccupiedPositions() {
+    Vector2Int[] result = occupiedTilesPosition.Clone() as Vector2Int[];
     for (int i = 0; i < result.Length; i++) {
-      result[i] += GridTransform.Position;
+      result[i] += GridTransform.LocalPosition;
     }
-    return occupiedTilesPosition;
+    return result;
   }
 }

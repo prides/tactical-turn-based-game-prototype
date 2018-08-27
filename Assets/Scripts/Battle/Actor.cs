@@ -31,14 +31,37 @@ public class Actor : GridMonoBehaviour, IDamagable {
   private List<ITurnListener> turnListeners = new List<ITurnListener>();
 
   private void Awake() {
+    Stat.Health.Changed += OnHealthValueChanged;
   }
 
-  public void ReceiveDamage(int damage, AttackType type) {
-    Stat.Health.Value -= damage;
-    if (Stat.Health.Value <= 0) {
-      if (OnDiedEvent != null) {
-        OnDiedEvent(this, EventArgs.Empty);
+  private void OnHealthValueChanged(object sender, IntStatValue.StatValueEventArgs e) {
+    if (e.type == IntStatValue.ValueType.Current) {
+      if (Stat.Health.Value <= 0) {
+        if (OnDiedEvent != null) {
+          OnDiedEvent(this, EventArgs.Empty);
+        }
       }
+    }
+  }
+
+  public void ReceiveDamage(int damage, AttackType attackType) {
+    switch (attackType)
+    {
+      case AttackType.Physical:
+        {
+          int healthDamage = 0;
+          if (Stat.PhysicalShield.Value < damage) {
+            healthDamage = damage - Stat.PhysicalShield.Value;
+          }
+          Stat.PhysicalShield.Value -= damage;
+          if (healthDamage != 0) {
+            Stat.Health.Value -= healthDamage;
+          }
+        }
+        break;
+      default:
+        Debug.LogWarning("Unknown attack type: " + attackType);
+        break;
     }
   }
 
@@ -75,10 +98,8 @@ public class Actor : GridMonoBehaviour, IDamagable {
       Debug.Log("node.x:" + node.X + " node.y:" + node.Y);
       yield return StartCoroutine(MoveToNode(node));
       Stat.MovePoints.Value--;
-      if (Stat.MovePoints.Value == 0) {
-        break;
-      }
     }
+    currentTile.isDirty = true;
     movingOverCallback(true);
   }
 
