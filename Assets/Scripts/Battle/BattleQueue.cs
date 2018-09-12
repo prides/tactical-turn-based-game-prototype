@@ -38,12 +38,37 @@ public class BattleQueue {
   private Queue<Cycle> queue = new Queue<Cycle>();
 
   private List<Actor> participants;
+  public List<Actor> Participants {
+    get { return participants; }
+  }
+
+  public int GroupsNumber {
+    get {
+      //TODO: need to optimize
+      Dictionary<int, bool> counter = new Dictionary<int, bool>();
+      foreach (Actor actor in participants) {
+        counter[actor.GroupId] = true;
+      }
+      return counter.Count;
+    }
+  }
 
   public BattleQueue(List<Actor> participants) {
     this.participants = participants;
 
     for (int i = 0; i < QUEUE_LENGTH; i++) {
       queue.Enqueue(new Cycle(participants));
+    }
+  }
+
+  public void RemoveParticipant(Actor actor) {
+    participants.Remove(actor);
+    UpdateQueue();
+  }
+
+  private void UpdateQueue() {
+    foreach (Cycle cycle in queue) {
+      cycle.Regenerate(this.participants);
     }
   }
 

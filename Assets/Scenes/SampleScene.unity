@@ -3481,6 +3481,8 @@ MonoBehaviour:
       baseValue: 3
       additionalValue: 0
       value: 3
+  currentBattleId: -1
+  groupId: 2
 --- !u!114 &546594078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6236,6 +6238,8 @@ MonoBehaviour:
       baseValue: 4
       additionalValue: 0
       value: 4
+  currentBattleId: -1
+  groupId: 1
 --- !u!1 &897096367
 GameObject:
   m_ObjectHideFlags: 0

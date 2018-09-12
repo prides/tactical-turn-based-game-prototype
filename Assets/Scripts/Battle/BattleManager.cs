@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +25,16 @@ public class BattleManager : MonoBehaviour {
     int battleId = Utils.Randomizer.Range(0, int.MaxValue);
     Battle battle = new Battle(battleId, participants);
     currentBattles.Add(battleId, battle);
+    battle.OnOverEvent += OnBattleOver;
+    foreach (Actor actor in participants) {
+      actor.JoinToBattle(battle);
+    }
     return battleId;
+  }
+
+  public void OnBattleOver(object sender, EventArgs e) {
+    Battle battle = (Battle)sender;
+    currentBattles.Remove(battle.ID);
   }
 
   public Battle GetBattle(int battleId) {
@@ -38,6 +47,9 @@ public class BattleManager : MonoBehaviour {
   }
 
   public Actor GetCurrentActor(int battleId) {
+    if (!currentBattles.ContainsKey(battleId)) {
+      return null;
+    }
     Battle battle = currentBattles[battleId];
     return battle.GetCurrentActor();
   }

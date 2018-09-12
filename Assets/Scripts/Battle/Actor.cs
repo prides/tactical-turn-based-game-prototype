@@ -3,13 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum AttackType
-{
+public enum AttackType {
   Physical
 }
 
-public interface IDamagable
-{
+public interface IDamagable {
   void ReceiveDamage(int damage, AttackType type);
 }
 
@@ -30,6 +28,20 @@ public class Actor : GridMonoBehaviour, IDamagable {
   [SerializeField]
   private List<ITurnListener> turnListeners = new List<ITurnListener>();
 
+  [SerializeField]
+  private int currentBattleId = -1;
+
+  [SerializeField]
+  private int groupId = 0;
+  public int GroupId {
+    get { return groupId; }
+    set { groupId = value; }
+  }
+
+  public bool IsParticipateInBattle {
+    get { return currentBattleId != -1; }
+  }
+
   private void Awake() {
     Stat.Health.Changed += OnHealthValueChanged;
   }
@@ -45,10 +57,8 @@ public class Actor : GridMonoBehaviour, IDamagable {
   }
 
   public void ReceiveDamage(int damage, AttackType attackType) {
-    switch (attackType)
-    {
-      case AttackType.Physical:
-        {
+    switch (attackType) {
+      case AttackType.Physical: {
           int healthDamage = 0;
           if (Stat.PhysicalShield.Value < damage) {
             healthDamage = damage - Stat.PhysicalShield.Value;
@@ -93,7 +103,7 @@ public class Actor : GridMonoBehaviour, IDamagable {
     }
   }
 
-  IEnumerator StartMoveTo(IEnumerable<AStarPathNode> path, Action<bool> movingOverCallback) {
+  private IEnumerator StartMoveTo(IEnumerable<AStarPathNode> path, Action<bool> movingOverCallback) {
     foreach (AStarPathNode node in path) {
       Debug.Log("node.x:" + node.X + " node.y:" + node.Y);
       yield return StartCoroutine(MoveToNode(node));
@@ -103,7 +113,7 @@ public class Actor : GridMonoBehaviour, IDamagable {
     movingOverCallback(true);
   }
 
-  IEnumerator MoveToNode(AStarPathNode node) {
+  private IEnumerator MoveToNode(AStarPathNode node) {
     if (node.X != (int)transform.position.x
       || node.Y != (int)transform.position.y) {
       float t = 0.0f;
@@ -122,5 +132,12 @@ public class Actor : GridMonoBehaviour, IDamagable {
         }
       }
     }
+  }
+
+  public void JoinToBattle(Battle battle) {
+    currentBattleId = battle.ID;
+    battle.OnOverEvent += new EventHandler(delegate (object sender, EventArgs e) {
+      currentBattleId = -1;
+    });
   }
 }

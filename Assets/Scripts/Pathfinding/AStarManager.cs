@@ -56,7 +56,7 @@ public class AStarManager : MonoBehaviour {
     }
   }
 
-    public LinkedList<AStarPathNode> Search(Vector2Int startPoint, Vector2Int endPoint) {
-      return Search(Converter.Convert<SettlersEngine.Point>(startPoint), Converter.Convert<SettlersEngine.Point>(endPoint));
+  public LinkedList<AStarPathNode> Search(Vector2Int startPoint, Vector2Int endPoint) {
+    return Search(Converter.Convert<SettlersEngine.Point>(startPoint), Converter.Convert<SettlersEngine.Point>(endPoint));
   }
 }
