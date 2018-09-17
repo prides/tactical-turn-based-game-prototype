@@ -38,6 +38,9 @@ public class Actor : GridMonoBehaviour, IDamagable {
     set { groupId = value; }
   }
 
+  [SerializeField]
+  private ActionType possibleActions = ActionType.None;
+
   public bool IsParticipateInBattle {
     get { return currentBattleId != -1; }
   }
@@ -78,11 +81,103 @@ public class Actor : GridMonoBehaviour, IDamagable {
   public void StartTurn() {
     Stat.MovePoints.ApplyTotal();
 
+    possibleActions = ActionType.Walk | ActionType.Melee;
+
     foreach (ITurnListener listener in turnListeners) {
       listener.OnNextTurn();
     }
   }
 
+  public ActionInfo GetActionInfo(Vector2Int position) {
+    if ((possibleActions & ActionType.Walk) == ActionType.Walk) {
+      LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(GridTransform.Position, position);
+      if (path == null || path.Count <= 1) {
+        Debug.LogWarning("Couldn't find path to " + position.ToString());
+        return null;
+      }
+      if (path.Count - 1 > Stat.MovePoints.Value) {
+        Debug.LogWarning("Not enough move points");
+        return null;
+      }
+      ActionInfo actionInfo = new ActionInfo();
+      actionInfo.ActionList.Add(new MovingAction(path.Count - 1, path));
+      return actionInfo;
+    }
+    Debug.LogWarning("Can't walk");
+    return null;
+  }
+
+  public ActionInfo GetActionInfo(Actor selectedActor) {
+    if (selectedActor == null) {
+      Debug.LogError("Invalid param");
+      return null;
+    }
+    LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(GridTransform.Position, selectedActor.GridTransform.Position);
+    if (path == null || path.Count <= 1) {
+      Debug.LogWarning("Couldn't find path to " + selectedActor.GridTransform.Position.ToString());
+      return null;
+    }
+    if (path.Count - 1 + 2 <= Stat.MovePoints.Value) {
+      Debug.LogWarning("Not enough move points");
+      return null;
+    }
+    ActionInfo actionInfo = new ActionInfo();
+    if (path.Count > 2) {
+      if ((possibleActions & ActionType.Walk) == ActionType.Walk) {
+        path.RemoveLast();
+        actionInfo.ActionList.Add(new MovingAction(path.Count - 1, path));
+        actionInfo.ActionList.Add(new AttackAction(2, ActionType.Melee, selectedActor));
+        return actionInfo;
+      }
+    } else {
+      actionInfo.ActionList.Add(new AttackAction(2, ActionType.Melee, selectedActor));
+      return actionInfo;
+    }
+    return null;
+  }
+
+  public void Perform(ActionInfo actionInfo, Action<bool> actionOverCallback) {
+    if (actionInfo == null) {
+      Debug.LogError("Invalid param");
+      actionOverCallback(false);
+      return;
+    }
+    StartCoroutine(PerformCoroutine(actionInfo, actionOverCallback));
+  }
+
+  private IEnumerator PerformCoroutine(ActionInfo actionInfo, Action<bool> actionOverCallback) {
+    foreach(ActionBase actionBase in actionInfo.ActionList) {
+      switch(actionBase.Type) {
+        case ActionType.Walk: {
+          MovingAction ma = (MovingAction)actionBase;
+          yield return StartCoroutine(StartMoveTo(ma.Path, delegate (bool result) {}));
+        }
+        break;
+        case ActionType.Melee: {
+          bool isOver = false;
+          AttackAction aa = (AttackAction)actionBase;
+          Attack(aa.Target, () => { isOver = true; });
+          yield return new WaitUntil(() => isOver);
+        }
+        break;
+        case ActionType.Distance: {
+
+        }
+        break;
+      }
+    }
+
+    actionOverCallback(true);
+  }
+
+  public void Attack(Actor target, Action overCallback) {
+    target.ReceiveDamage(25, AttackType.Physical);
+    Stat.MovePoints.Value-= 2;
+    overCallback();
+  }
+
+//TODO: need to move to another component
+#region Moving logic
   public void MoveTo(Vector3 position, Action<bool> movingOverCallback) {
     SettlersEngine.Point startPoint = new SettlersEngine.Point() {
       X = (int)this.transform.position.x,
@@ -133,6 +228,7 @@ public class Actor : GridMonoBehaviour, IDamagable {
       }
     }
   }
+#endregion
 
   public void JoinToBattle(Battle battle) {
     currentBattleId = battle.ID;

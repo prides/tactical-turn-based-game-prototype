@@ -26,6 +26,8 @@ public class SimpleClicker : MonoBehaviour {
     foreach (Actor actor in participants) {
       actor.OnDiedEvent += OnActorDied;
     }
+
+    BattleManager.GetInstance().GetCurrentActor(currentBattleId).StartTurn();
   }
 
   private void OnNextMove(object sender, EventArgs e) {
@@ -52,14 +54,15 @@ public class SimpleClicker : MonoBehaviour {
         if (point != lastPos) {
           lastPos = point;
           PathDrawer.GetInstance().HidePath();
-          LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(currentActor.GridTransform.Position, point);
-          if (path != null && path.Count - 1 <= currentActor.Stat.MovePoints.Value) {
-            Vector2Int[] pathVec = Converter.ConvertPath(path);
+          ActionInfo actionInfo = currentActor.GetActionInfo(point);
+          if (actionInfo != null && actionInfo.ActionList.Count > 0 && actionInfo.ActionList[0].Type == ActionType.Walk) {
+            Vector2Int[] pathVec = Converter.ConvertPath(((MovingAction)actionInfo.ActionList[0]).Path);
             PathDrawer.GetInstance().ShowPath(pathVec);
           }
         }
         if (Input.GetMouseButtonDown(0)) {
-          currentActor.MoveTo(rayHit.point, delegate (bool result) {
+          ActionInfo actionInfo = currentActor.GetActionInfo(point);
+          currentActor.Perform(actionInfo, delegate (bool result) {
             isHitGround = false;
             lastPos = Vector2Int.zero;
             if (currentActor.Stat.MovePoints.Value <= 0) {
@@ -71,49 +74,16 @@ public class SimpleClicker : MonoBehaviour {
       } else if (rayHit.collider.tag == "Actor") {
         if (Input.GetMouseButtonDown(0)) {
           Actor currentActor = BattleManager.GetInstance().GetCurrentActor(currentBattleId);
-          if (currentActor.Stat.MovePoints.Value > 0) {
-            Actor selectedActor = rayHit.collider.GetComponentInParent<Actor>();
-            if (selectedActor != null && currentActor != selectedActor && currentActor.GroupId != selectedActor.GroupId ) {
-              LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(currentActor.GridTransform.Position, selectedActor.GridTransform.Position);
-              if (path != null && path.Count != 0) {
-                if (path.Count == 1) {
-                  if (currentActor.Stat.MovePoints.Value >= 2) {
-                    selectedActor.ReceiveDamage(25, AttackType.Physical);
-                    currentActor.Stat.MovePoints.Value-= 2;
-                    if (currentActor.Stat.MovePoints.Value<= 0) {
-                      BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
-                    }
-                    GridManager.GetInstance().ShowBattleGrid(currentBattleId);
-                  }
-                } else {
-                  if (path.Count - 1 < currentActor.Stat.MovePoints.Value) {
-                    path.RemoveLast();
-                    AStarPathNode node = path.Last.Value;
-                    currentActor.MoveTo(new Vector3(node.X, 0, node.Y), delegate(bool result) {
-                      if (currentActor.Stat.MovePoints.Value>= 2) {
-                        selectedActor.ReceiveDamage(25, AttackType.Physical);
-                        currentActor.Stat.MovePoints.Value-= 2;
-                        if (currentActor.Stat.MovePoints.Value<= 0) {
-                          BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
-                        }
-                        GridManager.GetInstance().ShowBattleGrid(currentBattleId);
-                      }
-                    });
-                  }
+          Actor selectedActor = rayHit.collider.GetComponentInParent<Actor>();
+          if (selectedActor != null && currentActor != null) {
+            ActionInfo actionInfo = currentActor.GetActionInfo(selectedActor);
+            if (actionInfo != null) {
+              currentActor.Perform(actionInfo, delegate (bool result) {
+                if (currentActor.Stat.MovePoints.Value<= 0) {
+                  BattleManager.GetInstance().GetBattle(currentBattleId).NextTurn();
                 }
-              } else {
-                if (currentActor.Stat.MovePoints.Value >= 2) {
-                  selectedActor.ReceiveDamage(25, AttackType.Physical);
-                  currentActor.Stat.MovePoints.Value -= 2;
-                  if (currentActor.Stat.MovePoints.Value <= 0) {
-                    Battle battle = BattleManager.GetInstance().GetBattle(currentBattleId);
-                    if (battle != null) {
-                      battle.NextTurn();
-                    }
-                  }
-                  GridManager.GetInstance().ShowBattleGrid(currentBattleId);
-                }
-              }
+                GridManager.GetInstance().ShowBattleGrid(currentBattleId);
+              });
             }
           }
         }
