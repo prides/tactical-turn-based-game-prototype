@@ -112,19 +112,18 @@ public class Actor : GridMonoBehaviour, IDamagable {
       Debug.LogError("Invalid param");
       return null;
     }
-    LinkedList<AStarPathNode> path = AStarManager.GetInstance().Search(GridTransform.Position, selectedActor.GridTransform.Position);
-    if (path == null || path.Count <= 1) {
+    LinkedList<AStarPathNode> path = AStarManager.GetInstance().SearchClosest(GridTransform.Position, selectedActor.GridTransform.Position);
+    if (path == null || path.Count <= 0) {
       Debug.LogWarning("Couldn't find path to " + selectedActor.GridTransform.Position.ToString());
       return null;
     }
-    if (path.Count - 1 + 2 <= Stat.MovePoints.Value) {
+    if (path.Count - 1 + 2 > Stat.MovePoints.Value) {
       Debug.LogWarning("Not enough move points");
       return null;
     }
     ActionInfo actionInfo = new ActionInfo();
-    if (path.Count > 2) {
+    if (path.Count >= 2) {
       if ((possibleActions & ActionType.Walk) == ActionType.Walk) {
-        path.RemoveLast();
         actionInfo.ActionList.Add(new MovingAction(path.Count - 1, path));
         actionInfo.ActionList.Add(new AttackAction(2, ActionType.Melee, selectedActor));
         return actionInfo;

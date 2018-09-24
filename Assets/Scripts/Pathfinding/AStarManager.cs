@@ -28,6 +28,10 @@ public class AStarManager : MonoBehaviour {
     }
   }
 
+  public class SearchOptions {
+    public List<SettlersEngine.Point> forceWalkable = new List<SettlersEngine.Point>();
+  }
+
   private static AStarManager instance;
 
   private AStarSolver<AStarPathNode, object> currentSolver;
@@ -58,5 +62,23 @@ public class AStarManager : MonoBehaviour {
 
   public LinkedList<AStarPathNode> Search(Vector2Int startPoint, Vector2Int endPoint) {
     return Search(Converter.Convert<SettlersEngine.Point>(startPoint), Converter.Convert<SettlersEngine.Point>(endPoint));
+  }
+
+  public LinkedList<AStarPathNode> SearchClosest(SettlersEngine.Point startPoint, SettlersEngine.Point endPoint) {
+    if (currentSolver == null) {
+      return null;
+    } else {
+      SearchOptions opt = new SearchOptions();
+      opt.forceWalkable.Add(endPoint);
+      LinkedList<AStarPathNode> result = currentSolver.Search(startPoint, endPoint, opt);
+      if (result != null && result.Count > 0) {
+        result.RemoveLast();
+      }
+      return result;
+    }
+  }
+
+  public LinkedList<AStarPathNode> SearchClosest(Vector2Int startPoint, Vector2Int endPoint) {
+    return SearchClosest(Converter.Convert<SettlersEngine.Point>(startPoint), Converter.Convert<SettlersEngine.Point>(endPoint));
   }
 }
