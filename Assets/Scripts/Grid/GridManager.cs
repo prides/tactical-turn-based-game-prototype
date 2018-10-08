@@ -243,6 +243,9 @@ public class GridManager : MonoBehaviour {
         if (path != null && path.Count - 1 <= drawRange) {
           tileType = ((float)(path.Count - 1) / (float)drawRange) < 0.7f ? 2 : 1;
         }
+        if (tileType == 0) {
+          continue;
+        }
         tilemap.SetTile(new Vector3Int(x, y, 0), tileBases[tileType]);
         currentBattleGrid[index].Add(new Vector2Int(x, y));
       }
